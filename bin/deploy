@@ -1,0 +1,25 @@
+#!/bin/bash
+set -e
+
+cd ~/stock-keep
+
+echo "👉 Pulling latest code..."
+git pull origin main
+
+echo "👉 Installing dependencies..."
+bundle install
+yarn install
+
+echo "👉 Building JS/CSS..."
+./bin/build
+
+echo "👉 Precompiling assets..."
+RAILS_ENV=production bundle exec rails assets:precompile
+
+echo "👉 Running migrations..."
+RAILS_ENV=production bundle exec rails db:migrate
+
+echo "👉 Restarting Rails app..."
+sudo systemctl restart rails
+
+echo "✅ Deploy complete!"
