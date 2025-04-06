@@ -11,7 +11,8 @@ bundle install
 yarn install
 
 echo "👉 Building JS/CSS..."
-./bin/build
+yarn build
+yarn build:css
 
 echo "👉 Precompiling assets..."
 RAILS_ENV=production bundle exec rails assets:precompile
