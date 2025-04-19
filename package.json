@@ -14,7 +14,7 @@
   },
   "scripts": {
     "build": "node esbuild.config.js",
-    "build:css": "yarn tailwindcss --postcss -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css --watch --postcss"
+    "build:css": "yarn tailwindcss --postcss -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css"
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.1.4",
