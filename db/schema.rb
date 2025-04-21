@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_04_06_083459) do
+ActiveRecord::Schema[7.1].define(version: 2025_04_21_093916) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -42,6 +42,43 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_06_083459) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "products", force: :cascade do |t|
+    t.string "name", null: false
+    t.integer "price_cents", default: 0, null: false
+    t.integer "quantity", default: 0, null: false
+    t.string "sku", null: false
+    t.bigint "store_id", null: false
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["store_id"], name: "index_products_on_store_id"
+    t.index ["uuid"], name: "index_products_on_uuid", unique: true
+    t.check_constraint "price_cents >= 0", name: "price_cents_non_negative"
+  end
+
+  create_table "stores", force: :cascade do |t|
+    t.string "name", null: false
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["uuid"], name: "index_stores_on_uuid", unique: true
+  end
+
+  create_table "user_stores", force: :cascade do |t|
+    t.boolean "is_owner", default: false, null: false
+    t.boolean "limited_access", default: false, null: false
+    t.string "first_name", null: false
+    t.string "last_name", null: false
+    t.bigint "store_id", null: false
+    t.bigint "user_id", null: false
+    t.uuid "uuid", default: -> { "gen_random_uuid()" }, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["store_id"], name: "index_user_stores_on_store_id"
+    t.index ["user_id"], name: "index_user_stores_on_user_id"
+    t.index ["uuid"], name: "index_user_stores_on_uuid", unique: true
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -54,9 +91,12 @@ ActiveRecord::Schema[7.1].define(version: 2025_04_06_083459) do
     t.boolean "admin", default: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
-    t.index ["uuid"], name: "index_users_on_uuid"
+    t.index ["uuid"], name: "index_users_on_uuid", unique: true
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "products", "stores"
+  add_foreign_key "user_stores", "stores"
+  add_foreign_key "user_stores", "users"
 end
